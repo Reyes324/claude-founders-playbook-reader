@@ -1,5 +1,5 @@
 <title>创始人手册 · 随身读本</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
 <style>
   @font-face{
     font-family:'Fraunces';
@@ -111,7 +111,14 @@
     padding:calc(env(safe-area-inset-top) + 34px) 22px 56px;
     max-width:640px;margin:0 auto;
   }
+  .cover--chat{
+    height:100vh;height:100dvh;
+    display:flex;flex-direction:column;
+    padding-bottom:0;
+    overflow:hidden;
+  }
   .tab-bar{
+    flex:none;
     display:flex;gap:6px;margin-bottom:22px;
     background:var(--bg-soft);border-radius:12px;padding:4px;
   }
@@ -140,7 +147,7 @@
   }
   #tabPanelChat{
     display:flex;flex-direction:column;
-    left:0;right:0;
+    flex:1;min-height:0;
   }
   .chat-messages{
     flex:1 1 auto;min-height:0;overflow-y:auto;
@@ -512,7 +519,7 @@
 <div id="app">
 
   <section id="screen-cover" class="screen active">
-    <div class="cover">
+    <div class="cover" id="coverRoot">
       <div class="tab-bar" id="tabBar">
         <button class="tab-btn active" data-tab="toc" id="tabBtnToc">目录</button>
         <button class="tab-btn" data-tab="chat" id="tabBtnChat">与这本书对话</button>
@@ -1166,22 +1173,6 @@
   document.getElementById('chatPromptModalClose').addEventListener('click', closeChatPromptModal);
   document.getElementById('chatPromptModalBackdrop').addEventListener('click', closeChatPromptModal);
 
-  function layoutChatPanel(){
-    var panel = document.getElementById('tabPanelChat');
-    var bar = document.getElementById('tabBar');
-    if(!panel || !bar || panel.style.display === 'none') return;
-    var top = bar.getBoundingClientRect().bottom;
-    var vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-    panel.style.position = 'fixed';
-    panel.style.top = top + 'px';
-    panel.style.height = Math.max(0, vh - top) + 'px';
-  }
-  window.addEventListener('resize', layoutChatPanel);
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', layoutChatPanel);
-    window.visualViewport.addEventListener('scroll', layoutChatPanel);
-  }
-
   renderChatKeyBar();
   renderChatMessages();
 
@@ -1302,14 +1293,13 @@
     document.getElementById('tabPanelChat').style.display = name === 'chat' ? '' : 'none';
     document.getElementById('tabBtnToc').classList.toggle('active', name === 'toc');
     document.getElementById('tabBtnChat').classList.toggle('active', name === 'chat');
-    // The chat panel is a fixed-position overlay positioned relative to the
-    // tab bar's viewport coordinates; if the page underneath can still
-    // scroll (e.g. the mobile keyboard auto-scrolling to reveal the focused
-    // textarea), that reference point drifts and the panel flies off with
-    // it. Lock background scroll while the chat panel owns the screen.
+    // In chat mode the whole cover becomes a 100dvh flex column (tab bar +
+    // key bar + scrollable messages + input bar). dvh tracks the visible
+    // viewport on its own as the mobile keyboard opens/closes, so nothing
+    // here needs to watch resize/visualViewport or compute pixel offsets.
+    document.getElementById('coverRoot').classList.toggle('cover--chat', name === 'chat');
     document.documentElement.style.overflow = name === 'chat' ? 'hidden' : '';
     document.body.style.overflow = name === 'chat' ? 'hidden' : '';
-    if (name === 'chat') { layoutChatPanel(); }
   }
   document.getElementById('tabBtnToc').addEventListener('click', function(){ switchTab('toc'); });
   document.getElementById('tabBtnChat').addEventListener('click', function(){ switchTab('chat'); });
