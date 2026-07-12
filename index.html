@@ -1302,6 +1302,13 @@
     document.getElementById('tabPanelChat').style.display = name === 'chat' ? '' : 'none';
     document.getElementById('tabBtnToc').classList.toggle('active', name === 'toc');
     document.getElementById('tabBtnChat').classList.toggle('active', name === 'chat');
+    // The chat panel is a fixed-position overlay positioned relative to the
+    // tab bar's viewport coordinates; if the page underneath can still
+    // scroll (e.g. the mobile keyboard auto-scrolling to reveal the focused
+    // textarea), that reference point drifts and the panel flies off with
+    // it. Lock background scroll while the chat panel owns the screen.
+    document.documentElement.style.overflow = name === 'chat' ? 'hidden' : '';
+    document.body.style.overflow = name === 'chat' ? 'hidden' : '';
     if (name === 'chat') { layoutChatPanel(); }
   }
   document.getElementById('tabBtnToc').addEventListener('click', function(){ switchTab('toc'); });
