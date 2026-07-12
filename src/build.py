@@ -27,6 +27,7 @@ def main():
     out = out.replace("__COVER_SUBTITLE__", book["cover_subtitle"])
     out = out.replace("__COVER_AUTHORS__", book["cover_authors"])
     out = out.replace("__BOOK_TITLE_JS__", json.dumps(book["book_title"], ensure_ascii=False))
+    out = out.replace("__STORAGE_PREFIX__", book["storage_prefix"])
 
     out_path = ROOT / "index.html"
     out_path.write_text(out, encoding="utf-8")

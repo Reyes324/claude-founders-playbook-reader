@@ -634,7 +634,7 @@ __CHAT_LOGIC_JS__
   var CHAPTERS = __CHAPTERS_JSON__;
   var IMAGES = __IMAGES_JSON__;
   var TOTAL = CHAPTERS.length;
-  var STORAGE_KEY = 'xiaodao-jingjixue-progress-v2';
+  var STORAGE_KEY = '__STORAGE_PREFIX__-progress-v2';
 
   function defaultState(){
     return { lastChapter:0, fontScale:1, theme:'auto', chapters:{} };
@@ -919,7 +919,7 @@ __CHAT_LOGIC_JS__
     if(document.visibilityState === 'hidden') saveState(true);
   });
 
-  var CHAT_STORAGE_KEY = 'xiaodao-chat-v1';
+  var CHAT_STORAGE_KEY = '__STORAGE_PREFIX__-chat-v1';
 
   function loadChatData(){
     try{
